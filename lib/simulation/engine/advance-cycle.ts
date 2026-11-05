@@ -54,6 +54,7 @@ export function advanceCycle(
   }
 
   state.cycle += 1
+  state.environment = getEnvironmentCycle(mission, state.cycle)
   commissionReadyModules(state)
   const balance = runSystems(state)
 
@@ -65,6 +66,11 @@ export function advanceCycle(
   const outcome = evaluateOutcome(state, mission)
   if (outcome === 'failed') {
     state.status = 'failed'
+    state.outcome = {
+      status: 'failed',
+      title: 'Mission aborted',
+      detail: 'A critical crew or habitat threshold was crossed.',
+    }
     state.log.push({
       cycle: state.cycle,
       kind: 'system',
@@ -74,6 +80,11 @@ export function advanceCycle(
     })
   } else if (outcome === 'success') {
     state.status = 'success'
+    state.outcome = {
+      status: 'success',
+      title: 'Surface objectives secured',
+      detail: 'The crew completed the training window and is ready for ascent preparation.',
+    }
     state.log.push({
       cycle: state.cycle,
       kind: 'system',
@@ -91,6 +102,11 @@ export function advanceCycle(
   }
 
   return state
+}
+
+function getEnvironmentCycle(mission: MissionDefinition, cycle: number) {
+  const environment = mission.environment.find(entry => entry.cycle === cycle)
+  return environment ?? mission.environment[mission.environment.length - 1]
 }
 
 function commissionReadyModules(state: MissionState): void {
