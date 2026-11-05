@@ -9,7 +9,12 @@ import type { MissionDefinition, MissionState } from '@/lib/missions/lunar-south
  */
 export function evaluateOutcome(state: MissionState, mission: MissionDefinition): MissionStatus {
   const essentialReserveDepleted =
-    state.oxygen <= 0 || state.water <= 0 || state.food <= 0 || state.safety <= 0 || state.integrity <= 0
+    state.oxygen <= 0 ||
+    state.water <= 0 ||
+    state.food <= 0 ||
+    state.power <= 0 ||
+    state.safety <= 0 ||
+    state.integrity <= 0
 
   if (essentialReserveDepleted) return 'failed'
   if (state.cycle >= mission.durationCycles) return 'success'
