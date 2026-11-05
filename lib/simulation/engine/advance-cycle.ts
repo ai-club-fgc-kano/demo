@@ -5,7 +5,7 @@ import { resolveCrewSafetyDelta } from '../systems/crew'
 import { resolveHabitatIntegrityDelta } from '../systems/habitat'
 import { resolveLifeSupportDelta } from '../systems/life-support'
 import { getBatteryCapacity, resolvePowerBalance, type PowerBalance } from '../systems/power'
-import { clamp } from '../domain/resources'
+import { clamp, syncResourceLedger } from '../domain/resources'
 import { applyPlannedOperation } from './apply-operation'
 import { validateAction } from './available-actions'
 import { evaluateOutcome } from './evaluate-outcome'
@@ -57,6 +57,8 @@ export function advanceCycle(
   state.environment = getEnvironmentCycle(mission, state.cycle)
   commissionReadyModules(state)
   const balance = runSystems(state)
+  syncResourceLedger(state)
+  recordReserveWarnings(state, mission)
 
   const incident = selectIncident(state, mission)
   if (incident) state.pendingEvent = incident
@@ -142,6 +144,22 @@ function runSystems(state: MissionState): PowerBalance {
   state.research += PASSIVE_RESEARCH
 
   return balance
+}
+
+function recordReserveWarnings(state: MissionState, mission: MissionDefinition): void {
+  for (const [key, definition] of Object.entries(mission.resources)) {
+    const amount = state[key as keyof MissionState]
+    if (typeof amount !== 'number' || amount > definition.thresholds.warning || amount <= definition.thresholds.failure) continue
+
+    const critical = amount <= definition.thresholds.critical
+    state.log.push({
+      cycle: state.cycle,
+      kind: 'system',
+      title: `${definition.label} ${critical ? 'critical' : 'below reserve'}`,
+      detail: `${amount}${definition.unit} remaining. ${critical ? 'Immediate corrective action required.' : 'Plan a replenishment or load-shedding response.'}`,
+      tone: critical ? 'critical' : 'warning',
+    })
+  }
 }
 
 function recordCondition(state: MissionState): void {
