@@ -1,7 +1,7 @@
 import { Activity, CircleHelp, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { describeAction } from '@/lib/missions/lunar-south-pole/actions'
+import { describeAction, getActionDefinition } from '@/lib/missions/lunar-south-pole/actions'
 import type { ActionId, MissionState } from '@/lib/missions/lunar-south-pole/types'
 import { EventPanel } from './EventPanel'
 
@@ -57,6 +57,7 @@ export function OperationPanel({
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         {actions.map(action => {
           const { label, detail } = describeAction(action)
+          const definition = getActionDefinition(action)
           const isSelected = selected === action
 
           return (
@@ -75,6 +76,9 @@ export function OperationPanel({
                 <div>
                   <p className="text-sm font-medium">{label}</p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
+                  <p className="mt-2 text-[11px] font-medium uppercase tracking-[.12em] text-muted-foreground">
+                    {definition.category} · {definition.crewHours} crew-hours
+                  </p>
                 </div>
                 <Activity />
               </div>
