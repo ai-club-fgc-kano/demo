@@ -56,6 +56,17 @@ export type OperationDefinition = {
   description: string
 }
 
+export type ActionDefinition = {
+  id: ActionId
+  label: string
+  description: string
+  category: 'module' | 'operations'
+  crewHours: number
+  resourceCost: Partial<Record<ResourceKey, number>>
+  risk: 'low' | 'moderate' | 'high'
+  educationalExplanation: string
+}
+
 export type QueuedModule = {
   id: ModuleId
   readyCycle: number
