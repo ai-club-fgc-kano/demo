@@ -77,6 +77,8 @@ describe('cycle resolution', () => {
     const next = advanceCycle(createInitialState(), null)
 
     expect(next.cycle).toBe(2)
+    expect(next.environment).toEqual(lunarSouthPoleMission.environment[1])
+    expect(next.outcome).toBeNull()
     expect(next.power).toBe(37) // 42 + (10 generation − 15 demand)
     expect(next.oxygen).toBe(84) // 88 − 6 draw + 2 scrubbed (power above 10)
     expect(next.water).toBe(56) // 64 − 8 draw, no recovery loop yet
