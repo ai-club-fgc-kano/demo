@@ -41,16 +41,16 @@ The following observations were made against the repository's `main` branch duri
 
 **Goal:** Establish what is actually in the repository before changing it, preserve the working baseline, and make subsequent work verifiable.
 
-- [ ] Record the starting branch, HEAD SHA, working-tree status, and current deployment URL before modifying files. Do not overwrite, reset, clean, or silently discard uncommitted work.
-- [ ] Run the existing install/build flow using the repository's declared package manager and lockfile. Record the baseline build output and distinguish pre-existing failures from regressions introduced later.
+- [x] Record the starting branch, HEAD SHA, working-tree status, and current deployment URL before modifying files. Do not overwrite, reset, clean, or silently discard uncommitted work.
+- [x] Run the existing install/build flow using the repository's declared package manager and lockfile. Record the baseline build output and distinguish pre-existing failures from regressions introduced later.
 - [ ] Run the application locally and manually inspect both current states: the landing screen and the active mission screen. Capture screenshots at desktop and narrow-mobile widths before redesigning either screen.
 - [ ] Inspect browser console output, hydration warnings, React key warnings, network failures, and runtime exceptions. Fix only issues that are in scope, but record every confirmed finding.
-- [ ] Trace every exported function and state field in `lib/simulation/engine.ts` to its UI usage before refactoring. Preserve existing working behavior unless its behavior is explicitly replaced by a better specified behavior in this TODO.
-- [ ] Trace `MissionTrainer` imports, state transitions, selected action behavior, event choice behavior, reset behavior, theme behavior, and the exact point at which the mission becomes terminal.
-- [ ] Verify the actual runtime and deployment constraints before selecting a rendering stack or loading strategy. Confirm the supported Next.js, React, Tailwind, TypeScript, and pnpm versions from the checked-out lockfile and package manifest.
-- [ ] Create a small architecture/decision note for the scene renderer (Three.js directly vs. React Three Fiber, or another justified approach). Compare ecosystem fit, bundle cost, mobile performance, developer complexity, and accessibility before adding dependencies.
-- [ ] Create a clear implementation branch and keep changes scoped to this project. Do not perform drive-by dependency upgrades, unrelated formatting passes, or broad file renames.
-- [ ] Preserve the current baseline commit and any useful assets. Do not delete the current lunar image, icons, button primitive, or simulation behavior until their replacement has been implemented and checked.
+- [x] Trace every exported function and state field in `lib/simulation/engine.ts` to its UI usage before refactoring. Preserve existing working behavior unless its behavior is explicitly replaced by a better specified behavior in this TODO.
+- [x] Trace `MissionTrainer` imports, state transitions, selected action behavior, event choice behavior, reset behavior, theme behavior, and the exact point at which the mission becomes terminal.
+- [x] Verify the actual runtime and deployment constraints before selecting a rendering stack or loading strategy. Confirm the supported Next.js, React, Tailwind, TypeScript, and pnpm versions from the checked-out lockfile and package manifest.
+- [x] Create a small architecture/decision note for the scene renderer (Three.js directly vs. React Three Fiber, or another justified approach). Compare ecosystem fit, bundle cost, mobile performance, developer complexity, and accessibility before adding dependencies.
+- [x] Create a clear implementation branch and keep changes scoped to this project. Do not perform drive-by dependency upgrades, unrelated formatting passes, or broad file renames.
+- [x] Preserve the current baseline commit and any useful assets. Do not delete the current lunar image, icons, button primitive, or simulation behavior until their replacement has been implemented and checked.
 
 **Exit criteria:** The agent can explain the current application flow, current simulation transition, known defects, and baseline build state before redesigning them.
 
@@ -58,22 +58,22 @@ The following observations were made against the repository's `main` branch duri
 
 **Goal:** Remove structural blockers without prematurely rebuilding the entire app.
 
-- [ ] Rename the package from `my-project` to a meaningful project identifier such as `outpost-mission-trainer` (or an agreed name) and update only the package metadata that is actually relevant.
-- [ ] Remove `typescript.ignoreBuildErrors` from `next.config.mjs`. Type errors must be fixed rather than bypassed.
-- [ ] Add explicit scripts for `dev`, `build`, `start`, `typecheck`, `lint`, and `test`. Use tools compatible with the existing Next.js/TypeScript setup and ensure the lockfile is updated with any dependency change.
-- [ ] Add a lint configuration that matches the project's actual framework and TypeScript versions. Avoid introducing conflicting or obsolete ESLint presets.
-- [ ] Add a test runner appropriate for the codebase and separate fast, deterministic simulation tests from browser/UI tests. Do not add an elaborate end-to-end framework unless the actual demo requires it.
-- [ ] Configure the font provider in `app/layout.tsx` so the Geist variables used by `app/globals.css` are actually defined, or replace those variables with a deliberately selected installed/system font stack.
-- [ ] Remove the `generator: 'v0.app'` metadata and replace it with accurate product metadata. Set an accurate page title and description that explain this is an educational lunar surface mission simulator.
-- [ ] Review installed dependencies and imports. Confirm whether `@vercel/analytics` is actually used; either integrate it deliberately with a privacy-conscious reason or remove it. Do not keep unused packages by accident.
-- [ ] Add a root `README.md` describing the demo, local setup, scripts, high-level architecture, mission assumptions, and how to add a mission/system/event without putting implementation detail into the README that belongs in code documentation.
+- [x] Rename the package from `my-project` to a meaningful project identifier such as `outpost-mission-trainer` (or an agreed name) and update only the package metadata that is actually relevant.
+- [x] Remove `typescript.ignoreBuildErrors` from `next.config.mjs`. Type errors must be fixed rather than bypassed.
+- [x] Add explicit scripts for `dev`, `build`, `start`, `typecheck`, `lint`, and `test`. Use tools compatible with the existing Next.js/TypeScript setup and ensure the lockfile is updated with any dependency change.
+- [x] Add a lint configuration that matches the project's actual framework and TypeScript versions. Avoid introducing conflicting or obsolete ESLint presets.
+- [x] Add a test runner appropriate for the codebase and separate fast, deterministic simulation tests from browser/UI tests. Do not add an elaborate end-to-end framework unless the actual demo requires it.
+- [x] Configure the font provider in `app/layout.tsx` so the Geist variables used by `app/globals.css` are actually defined, or replace those variables with a deliberately selected installed/system font stack.
+- [x] Remove the `generator: 'v0.app'` metadata and replace it with accurate product metadata. Set an accurate page title and description that explain this is an educational lunar surface mission simulator.
+- [x] Review installed dependencies and imports. Confirm whether `@vercel/analytics` is actually used; either integrate it deliberately with a privacy-conscious reason or remove it. Do not keep unused packages by accident.
+- [x] Add a root `README.md` describing the demo, local setup, scripts, high-level architecture, mission assumptions, and how to add a mission/system/event without putting implementation detail into the README that belongs in code documentation.
 - [ ] Define clear boundaries between app routes, reusable UI, mission-specific scene rendering, simulation domain logic, mission scenario definitions, NASA/reference-data adapters, and tests.
-- [ ] Split `components/MissionTrainer.tsx` by responsibility. At minimum, separate landing-page UI, simulation workspace shell, mission header/navigation, resource/telemetry panels, operation selection, event/alert presentation, cycle timeline, mission log, and debrief.
-- [ ] Split `lib/simulation/engine.ts` by domain responsibility. Keep a small public engine/orchestrator entry point if useful, but isolate domain types, action validation, resource models, system models, event eligibility/resolution, cycle orchestration, objective evaluation, and outcome calculation.
-- [ ] Avoid creating one oversized replacement file. Each module must have one coherent reason to change; each React component should own a clear portion of the UI and receive typed inputs rather than reading or mutating unrelated global state.
-- [ ] Keep mission-specific constants, schedules, available equipment, events, and objective definitions outside generic simulation mechanics. The generic engine must not hard-code the lunar mission's cycle number or specific incident names.
-- [ ] Add path aliases only where they improve clarity; use consistent import ordering and naming. Do not invent a complex monorepo or plugin architecture for this demo.
-- [ ] Retain and reuse `components/ui/button.tsx` and `lib/utils.ts` when appropriate. Do not replace the established UI primitive system with custom one-off buttons across the app.
+- [x] Split `components/MissionTrainer.tsx` by responsibility. At minimum, separate landing-page UI, simulation workspace shell, mission header/navigation, resource/telemetry panels, operation selection, event/alert presentation, cycle timeline, mission log, and debrief.
+- [x] Split `lib/simulation/engine.ts` by domain responsibility. Keep a small public engine/orchestrator entry point if useful, but isolate domain types, action validation, resource models, system models, event eligibility/resolution, cycle orchestration, objective evaluation, and outcome calculation.
+- [x] Avoid creating one oversized replacement file. Each module must have one coherent reason to change; each React component should own a clear portion of the UI and receive typed inputs rather than reading or mutating unrelated global state.
+- [x] Keep mission-specific constants, schedules, available equipment, events, and objective definitions outside generic simulation mechanics. The generic engine must not hard-code the lunar mission's cycle number or specific incident names.
+- [x] Add path aliases only where they improve clarity; use consistent import ordering and naming. Do not invent a complex monorepo or plugin architecture for this demo.
+- [x] Retain and reuse `components/ui/button.tsx` and `lib/utils.ts` when appropriate. Do not replace the established UI primitive system with custom one-off buttons across the app.
 
 **Suggested target structure (adapt to the actual implementation; do not create empty folders solely to match this illustration):**
 
