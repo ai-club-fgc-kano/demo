@@ -1,0 +1,31 @@
+import type { MissionState, ResourceDelta, ResourceKey } from '@/lib/missions/lunar-south-pole/types'
+
+/**
+ * Clamp and round a reserve index. The baseline model stores every stock as a
+ * 0–100 index; Phase 2 replaces this with per-resource capacities and units.
+ */
+export function clamp(value: number, min = 0, max = 100): number {
+  return Math.max(min, Math.min(max, Math.round(value)))
+}
+
+/** True when the mission state holds at least the requested amount of each resource. */
+export function canAfford(state: MissionState, cost: Partial<Record<ResourceKey, number>>): boolean {
+  return Object.entries(cost).every(([key, amount]) => state[key as ResourceKey] >= (amount ?? 0))
+}
+
+/**
+ * Apply a signed delta to a cloned mission state. Only known resource fields and
+ * the two tracked condition indices are touched; unknown keys are ignored so a
+ * malformed effect cannot invent a state field.
+ */
+export function applyDelta(state: MissionState, delta: ResourceDelta): void {
+  for (const [key, amount] of Object.entries(delta)) {
+    if (key === 'research' || key === 'readiness') {
+      state[key] = clamp(state[key] + (amount ?? 0))
+      continue
+    }
+    if (key in state) {
+      state[key as ResourceKey] = clamp(state[key as ResourceKey] + (amount ?? 0))
+    }
+  }
+}
