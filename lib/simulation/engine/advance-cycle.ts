@@ -100,7 +100,7 @@ export function advanceCycle(
       cycle: state.cycle,
       kind: 'system',
       title: 'Cycle report filed',
-      detail: `Power ${balance.generation} generated / ${balance.demand} demanded · reserves updated.`,
+      detail: `Power ${balance.generation} generated / ${balance.demand} demanded · ${balance.unmet} unmet · reserves updated.`, 
     })
   }
 
