@@ -35,7 +35,8 @@ export function ResourceTelemetry({ state }: { state: MissionState }) {
             </div>
             <p className={`mt-3 text-xl font-semibold ${low ? 'text-destructive' : ''}`}>
               {formatValue(value, stock?.unit ?? unit)}
-              <span className="ml-1 text-xs font-normal text-muted-foreground">{stock?.unit ?? unit}</span>
+              {' '}
+              <span className="text-xs font-normal text-muted-foreground">{stock?.unit ?? unit}</span>
             </p>
             <div className="mt-2 h-1 rounded-full bg-muted">
               {/* The baseline model stores every resource as a 0–100 index; Phase 2 uses real capacities. */}
