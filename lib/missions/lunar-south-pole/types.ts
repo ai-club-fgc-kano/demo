@@ -1,4 +1,9 @@
 import type { LogEntry, MissionStatus } from '@/lib/simulation/domain/types'
+import type {
+  EnvironmentCycle,
+  MissionBrief,
+  MissionResourceDefinition,
+} from './contract'
 
 /**
  * Lunar south-pole mission contract.
@@ -104,4 +109,7 @@ export type MissionDefinition = {
   objectives: { id: MissionObjectiveId; label: string }[]
   events: MissionEvent[]
   introLog: { title: string; detail: string }
+  brief: MissionBrief
+  resources: Record<ResourceKey, MissionResourceDefinition>
+  environment: EnvironmentCycle[]
 }
