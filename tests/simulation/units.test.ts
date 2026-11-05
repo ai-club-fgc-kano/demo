@@ -4,6 +4,7 @@ import {
   addQuantity,
   boundQuantity,
   canSubtract,
+  evaluateCondition,
   evaluateThreshold,
   formatQuantity,
   subtractQuantity,
@@ -39,6 +40,12 @@ describe('unit-safe quantity helpers', () => {
     expect(evaluateThreshold(40, thresholds)).toBe('warning')
     expect(evaluateThreshold(10, thresholds)).toBe('critical')
     expect(evaluateThreshold(0, thresholds)).toBe('failure')
+  })
+
+  it('derives readable subsystem condition bands', () => {
+    expect(evaluateCondition(82)).toBe('nominal')
+    expect(evaluateCondition(52)).toBe('watch')
+    expect(evaluateCondition(21)).toBe('critical')
   })
 
   it('formats quantities with their units', () => {

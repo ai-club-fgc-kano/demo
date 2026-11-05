@@ -31,6 +31,14 @@ export function canSubtract(quantity: BoundedQuantity, amount: number): boolean 
   return finite(amount) >= 0 && finite(quantity.value) >= amount
 }
 
+export type ConditionBand = 'critical' | 'watch' | 'nominal'
+
+export function evaluateCondition(value: number): ConditionBand {
+  if (value < 35) return 'critical'
+  if (value < 65) return 'watch'
+  return 'nominal'
+}
+
 export function evaluateThreshold(
   value: number,
   thresholds: { reserve: number; warning: number; critical: number; failure: number },
