@@ -25,7 +25,13 @@ export function applyDelta(state: MissionState, delta: ResourceDelta): void {
       continue
     }
     if (key in state) {
-      state[key as ResourceKey] = clamp(state[key as ResourceKey] + (amount ?? 0))
+      const resourceKey = key as ResourceKey
+      const nextAmount = clamp(state[resourceKey] + (amount ?? 0))
+      state[resourceKey] = nextAmount
+      const stock = state.resources?.[resourceKey]
+      if (stock) {
+        stock.amount = Math.max(0, Math.min(stock.capacity, nextAmount))
+      }
     }
   }
 }
