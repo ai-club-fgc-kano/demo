@@ -22,6 +22,10 @@ export type OperationId = 'inspect' | 'science' | 'eva' | 'conserve' | 'repair'
 
 export type ActionId = ModuleId | OperationId
 
+export type ActionValidationResult =
+  | { ok: true }
+  | { ok: false; code: 'unavailable' | 'insufficient-resources'; message: string }
+
 export type MissionObjectiveId = 'systems-check' | 'sample-return' | 'crew-safety'
 
 export type ResourceDelta = Partial<Record<ResourceKey | 'research' | 'readiness', number>>

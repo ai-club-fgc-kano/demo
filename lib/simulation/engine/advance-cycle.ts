@@ -40,13 +40,13 @@ export function advanceCycle(
   if (state.status !== 'active' || state.pendingEvent) return state
 
   if (action) {
-    const rejection = validateAction(state, action)
-    if (rejection) {
+    const validation = validateAction(state, action)
+    if (!validation.ok) {
       state.log.push({
         cycle: state.cycle,
         kind: 'system',
-        title: 'Operation unavailable',
-        detail: rejection,
+        title: validation.code === 'insufficient-resources' ? 'Reserve check failed' : 'Operation unavailable',
+        detail: validation.message,
         tone: 'warning',
       })
       return state
