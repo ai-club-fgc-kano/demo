@@ -21,8 +21,10 @@ export function ResourceTelemetry({ state }: { state: MissionState }) {
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {resourceTelemetry.map(({ key, label, unit }) => {
         const Icon = resourceIcons[key]
-        const value = state[key]
-        const low = value < LOW_RESERVE
+        const stock = state.resources?.[key]
+        const value = stock?.amount ?? state[key]
+        const capacity = stock?.capacity ?? 100
+        const low = stock ? value <= stock.capacity * 0.3 : value < LOW_RESERVE
         const remaining = estimateCyclesRemaining(state, key)
 
         return (
@@ -32,14 +34,14 @@ export function ResourceTelemetry({ state }: { state: MissionState }) {
               <Icon className="size-4" />
             </div>
             <p className={`mt-3 text-xl font-semibold ${low ? 'text-destructive' : ''}`}>
-              {formatValue(value, unit)}
-              {unit !== '%' && <span className="ml-1 text-xs font-normal text-muted-foreground">{unit}</span>}
+              {formatValue(value, stock?.unit ?? unit)}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">{stock?.unit ?? unit}</span>
             </p>
             <div className="mt-2 h-1 rounded-full bg-muted">
               {/* The baseline model stores every resource as a 0–100 index; Phase 2 uses real capacities. */}
               <div
                 className="h-1 rounded-full bg-foreground transition-all duration-700"
-                style={{ width: `${Math.min(100, value)}%` }}
+                style={{ width: `${Math.min(100, (value / capacity) * 100)}%` }}
               />
             </div>
             <p className="mt-2 text-[10px] text-muted-foreground">
