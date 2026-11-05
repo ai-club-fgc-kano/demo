@@ -1,7 +1,7 @@
 import { moduleCatalog } from '@/lib/missions/lunar-south-pole/modules'
 import { getMission } from '@/lib/missions/registry'
 import { selectIncident } from '../events/select-incident'
-import { resolveCrewSafetyDelta } from '../systems/crew'
+import { resolveCrewCondition, resolveCrewSafetyDelta } from '../systems/crew'
 import { resolveHabitatIntegrityDelta } from '../systems/habitat'
 import { resolveLifeSupportDelta } from '../systems/life-support'
 import { getBatteryCapacity, resolvePowerBalance, type PowerBalance } from '../systems/power'
@@ -139,6 +139,7 @@ function runSystems(state: MissionState): PowerBalance {
   state.food = clamp(state.food + lifeSupport.food)
 
   state.integrity = clamp(state.integrity + resolveHabitatIntegrityDelta(state))
+  state.crew = resolveCrewCondition(state)
   state.safety = clamp(state.safety + resolveCrewSafetyDelta(state))
 
   evaluateStateObjectives(state)

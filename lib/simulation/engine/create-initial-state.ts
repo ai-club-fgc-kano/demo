@@ -23,6 +23,7 @@ export function createInitialState(mission: MissionDefinition = getMission()): M
     integrity: startingCondition.integrity,
     readiness: startingCondition.readiness,
     efficiency: startingCondition.efficiency,
+    crew: { fatigue: 12, radiationExposure: 0, availableHours: 8 },
     research: 0,
     status: 'active',
     modules: [],

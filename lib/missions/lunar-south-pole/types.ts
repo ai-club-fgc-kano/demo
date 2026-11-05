@@ -109,6 +109,12 @@ export type MissionOutcome = {
   detail: string
 } | null
 
+export type CrewCondition = {
+  fatigue: number
+  radiationExposure: number
+  availableHours: number
+}
+
 export type MissionState = {
   run: MissionRunMetadata
   environment: EnvironmentCycle
@@ -125,6 +131,7 @@ export type MissionState = {
   research: number
   efficiency: number
   readiness: number
+  crew: CrewCondition
   status: MissionStatus
   modules: ModuleId[]
   queued: QueuedModule[]
