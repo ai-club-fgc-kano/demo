@@ -6,6 +6,7 @@ import { resolveHabitatIntegrityDelta } from '../systems/habitat'
 import { resolveLifeSupportDelta } from '../systems/life-support'
 import { getBatteryCapacity, resolvePowerBalance, type PowerBalance } from '../systems/power'
 import { clamp, syncResourceLedger } from '../domain/resources'
+import { createSeededRandom } from '../domain/random'
 import { applyPlannedOperation } from './apply-operation'
 import { validateAction } from './available-actions'
 import { evaluateOutcome } from './evaluate-outcome'
@@ -60,7 +61,7 @@ export function advanceCycle(
   syncResourceLedger(state)
   recordReserveWarnings(state, mission)
 
-  const incident = selectIncident(state, mission)
+  const incident = selectIncident(state, mission, createSeededRandom(state.run.seed + state.cycle))
   if (incident) state.pendingEvent = incident
 
   recordCondition(state)
