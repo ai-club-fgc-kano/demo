@@ -5,6 +5,7 @@ import { describeAction } from '@/lib/missions/lunar-south-pole/actions'
 import { getAvailableActions } from '@/lib/simulation/engine'
 import type { ActionId, MissionState } from '@/lib/missions/lunar-south-pole/types'
 import { MissionConditionChart } from './MissionConditionChart'
+import { MissionEnvironmentCard } from './MissionEnvironmentCard'
 import { MissionHeader } from './MissionHeader'
 import { MissionStatusPanel } from './MissionStatusPanel'
 import { OperationPanel } from './OperationPanel'
@@ -77,6 +78,7 @@ export function MissionWorkspace({
           </div>
 
           <MissionConditionChart score={conditionScore} history={state.history} />
+          <MissionEnvironmentCard environment={state.environment} />
           <ResourceTelemetry state={state} />
 
           <OperationPanel
