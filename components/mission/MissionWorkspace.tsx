@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { describeAction } from '@/lib/missions/lunar-south-pole/actions'
 import { getAvailableActions } from '@/lib/simulation/engine'
 import type { ActionId, MissionState } from '@/lib/missions/lunar-south-pole/types'
+import { lunarSouthPoleMission } from '@/lib/missions/lunar-south-pole/definition'
+import { MissionBriefing } from './MissionBriefing'
 import { MissionConditionChart } from './MissionConditionChart'
 import { MissionEnvironmentCard } from './MissionEnvironmentCard'
 import { MissionHeader } from './MissionHeader'
@@ -77,6 +79,11 @@ export function MissionWorkspace({
             </div>
           </div>
 
+          <MissionBriefing
+            brief={lunarSouthPoleMission.brief}
+            crewSize={lunarSouthPoleMission.crewSize}
+            durationCycles={lunarSouthPoleMission.durationCycles}
+          />
           <MissionConditionChart score={conditionScore} history={state.history} />
           <MissionEnvironmentCard environment={state.environment} />
           <ResourceTelemetry state={state} />
