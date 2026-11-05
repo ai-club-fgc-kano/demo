@@ -3,8 +3,12 @@ import type { MissionDefinition, MissionState } from '@/lib/missions/lunar-south
 
 export function createInitialState(mission: MissionDefinition = getMission()): MissionState {
   const { startingResources, startingCondition, introLog } = mission
+  const seed = 1
 
   return {
+    run: { seed, scenarioVersion: 'lunar-south-pole-v1', cycleLengthHours: 24 },
+    environment: mission.environment[0],
+    outcome: null,
     cycle: 1,
     ...startingResources,
     safety: startingCondition.safety,

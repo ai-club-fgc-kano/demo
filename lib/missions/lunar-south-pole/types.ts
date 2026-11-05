@@ -76,7 +76,22 @@ export type ConditionSnapshot = {
   efficiency: number
 }
 
+export type MissionRunMetadata = {
+  seed: number
+  scenarioVersion: string
+  cycleLengthHours: number
+}
+
+export type MissionOutcome = {
+  status: Extract<MissionStatus, 'success' | 'failed'>
+  title: string
+  detail: string
+} | null
+
 export type MissionState = {
+  run: MissionRunMetadata
+  environment: EnvironmentCycle
+  outcome: MissionOutcome
   cycle: number
   oxygen: number
   water: number
