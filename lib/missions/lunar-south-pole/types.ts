@@ -82,6 +82,12 @@ export type MissionRunMetadata = {
   cycleLengthHours: number
 }
 
+export type ResourceStock = {
+  amount: number
+  capacity: number
+  unit: MissionResourceDefinition['unit']
+}
+
 export type MissionOutcome = {
   status: Extract<MissionStatus, 'success' | 'failed'>
   title: string
@@ -92,6 +98,7 @@ export type MissionState = {
   run: MissionRunMetadata
   environment: EnvironmentCycle
   outcome: MissionOutcome
+  resources: Record<ResourceKey, ResourceStock>
   cycle: number
   oxygen: number
   water: number
