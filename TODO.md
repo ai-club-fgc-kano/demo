@@ -171,13 +171,13 @@ tests/
 
 ## 2.1 Mission definition and scenario assumptions
 
-- [ ] Write a mission brief for one fictional pre-deployed lunar south-pole outpost scenario: mission purpose, site context, crew size, mission window, habitat assets, pre-positioned equipment, communications assumptions, available spares, and success/abort criteria.
-- [ ] Use a two-person surface crew as the initial scenario unless the current product requirements establish a different crew count. Make crew count a mission configuration value, not an engine constant.
-- [ ] Define an explicit finite training window (the current engine appears to target an eight-cycle completion threshold). Store the duration in the mission definition and make the final cycle logic derive from it.
-- [ ] Document which systems and assets are assumed to have been delivered before the crew arrives. Do not accidentally turn an early surface expedition into a fully developed lunar settlement.
-- [ ] Document the model's limits. Use plausible causal relationships and scenario parameters, but do not claim high-fidelity orbital mechanics, exact NASA flight rules, precise biomedical prediction, or exact Artemis hardware replication.
-- [ ] Separate scenario facts, educational simplifications, and adjustable game parameters. Give every important simulation parameter a unit, a short explanation, and a source or an explicit “scenario assumption” label.
-- [ ] Make the illumination and environmental conditions configurable for the selected south-pole site. Do not implement simplistic “lunar day/night” behavior or assume that every south-pole location receives continuous sunlight.
+- [x] Write a mission brief for one fictional pre-deployed lunar south-pole outpost scenario: mission purpose, site context, crew size, mission window, habitat assets, pre-positioned equipment, communications assumptions, available spares, and success/abort criteria.
+- [x] Use a two-person surface crew as the initial scenario unless the current product requirements establish a different crew count. Make crew count a mission configuration value, not an engine constant.
+- [x] Define an explicit finite training window (the current engine appears to target an eight-cycle completion threshold). Store the duration in the mission definition and make the final cycle logic derive from it.
+- [x] Document which systems and assets are assumed to have been delivered before the crew arrives. Do not accidentally turn an early surface expedition into a fully developed lunar settlement.
+- [x] Document the model's limits. Use plausible causal relationships and scenario parameters, but do not claim high-fidelity orbital mechanics, exact NASA flight rules, precise biomedical prediction, or exact Artemis hardware replication.
+- [x] Separate scenario facts, educational simplifications, and adjustable game parameters. Give every important simulation parameter a unit, a short explanation, and a source or an explicit “scenario assumption” label.
+- [x] Make the illumination and environmental conditions configurable for the selected south-pole site. Do not implement simplistic “lunar day/night” behavior or assume that every south-pole location receives continuous sunlight.
 - [ ] Define the environment input for each cycle: illumination availability, external thermal condition, dust exposure, radiation forecast/alert level, and operational constraints. Keep these values in the scenario environment rather than sprinkling them through calculation functions.
 
 ## 2.2 Typed state and units

@@ -28,6 +28,16 @@ export function EventPanel({ event, onChoose }: EventPanelProps) {
           >
             <p className="text-sm font-medium">{choice.label}</p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">{choice.detail}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Decision impacts">
+              {Object.entries(choice.effects).map(([resource, amount]) => (
+                <span key={resource} className="rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {resource} {amount > 0 ? '+' : ''}{amount}
+                </span>
+              ))}
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                safety {choice.safety > 0 ? '+' : ''}{choice.safety}
+              </span>
+            </div>
           </button>
         ))}
       </div>

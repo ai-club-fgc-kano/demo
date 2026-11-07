@@ -10,10 +10,14 @@ const BASE_BATTERY_CAPACITY = 100
 const AUXILIARY_BATTERY_CAPACITY = 124
 
 export type PowerBalance = {
-  /** Generation for the cycle, in reserve points. */
+  /** Generation for the cycle, in configured energy units. */
   generation: number
-  /** Demand for the cycle, in reserve points. */
+  /** Demand for the cycle, in configured energy units. */
   demand: number
+  /** Energy stored after serving demand, before capacity clamping. */
+  stored: number
+  /** Demand that could not be served by generation and storage. */
+  unmet: number
   net: number
 }
 
@@ -29,7 +33,14 @@ export function resolvePowerBalance(state: MissionState): PowerBalance {
     (hasModule(state, 'recycler') ? RECYCLER_DEMAND : 0) +
     (hasModule(state, 'shielding') ? SHIELDING_DEMAND : 0)
 
-  return { generation, demand, net: generation - demand }
+  const net = generation - demand
+  return {
+    generation,
+    demand,
+    stored: Math.max(0, net),
+    unmet: Math.max(0, -net),
+    net,
+  }
 }
 
 /** Configured storage ceiling for the current battery configuration. */

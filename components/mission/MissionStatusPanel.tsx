@@ -1,10 +1,22 @@
 import { Check } from 'lucide-react'
+import { evaluateCondition, type ConditionBand } from '@/lib/simulation/domain/units'
 import type { MissionState } from '@/lib/missions/lunar-south-pole/types'
 
+const bandStyles: Record<ConditionBand, string> = {
+  nominal: 'text-emerald-600 dark:text-emerald-400',
+  watch: 'text-amber-600 dark:text-amber-400',
+  critical: 'text-destructive',
+}
+
 function Metric({ label, value, suffix = '%' }: { label: string; value: number; suffix?: string }) {
+  const band = evaluateCondition(value)
+
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+        <span className={`text-[10px] uppercase tracking-wider ${bandStyles[band]}`}>{band}</span>
+      </div>
       <p className="mt-1 text-lg font-semibold">
         {value}
         <span className="text-xs font-normal text-muted-foreground">{suffix}</span>

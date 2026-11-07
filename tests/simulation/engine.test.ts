@@ -48,7 +48,10 @@ describe('action validation', () => {
     state.materials = 5
 
     expect(getAvailableActions(state)).not.toContain('solar')
-    expect(validateAction(state, 'solar')).toMatch(/not available/i)
+    expect(validateAction(state, 'solar')).toMatchObject({
+    ok: false,
+    code: 'insufficient-resources',
+  })
   })
 
   it('rejects an invalid operation without mutating reserves, objectives or the clock', () => {
@@ -59,7 +62,7 @@ describe('action validation', () => {
     expect(next.cycle).toBe(state.cycle)
     expect(next.materials).toBe(state.materials)
     expect(next.objectives).toEqual(state.objectives)
-    expect(next.log.at(-1)).toMatchObject({ title: 'Operation unavailable', tone: 'warning' })
+    expect(next.log.at(-1)).toMatchObject({ title: 'Reserve check failed', tone: 'warning' })
     expect(state.log).toHaveLength(1)
   })
 
@@ -77,6 +80,8 @@ describe('cycle resolution', () => {
     const next = advanceCycle(createInitialState(), null)
 
     expect(next.cycle).toBe(2)
+    expect(next.environment).toEqual(lunarSouthPoleMission.environment[1])
+    expect(next.outcome).toBeNull()
     expect(next.power).toBe(37) // 42 + (10 generation − 15 demand)
     expect(next.oxygen).toBe(84) // 88 − 6 draw + 2 scrubbed (power above 10)
     expect(next.water).toBe(56) // 64 − 8 draw, no recovery loop yet

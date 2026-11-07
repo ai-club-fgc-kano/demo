@@ -1,11 +1,12 @@
 import { moduleCatalog } from '@/lib/missions/lunar-south-pole/modules'
 import { getMission } from '@/lib/missions/registry'
 import { selectIncident } from '../events/select-incident'
-import { resolveCrewSafetyDelta } from '../systems/crew'
+import { resolveCrewCondition, resolveCrewSafetyDelta } from '../systems/crew'
 import { resolveHabitatIntegrityDelta } from '../systems/habitat'
 import { resolveLifeSupportDelta } from '../systems/life-support'
 import { getBatteryCapacity, resolvePowerBalance, type PowerBalance } from '../systems/power'
-import { clamp } from '../domain/resources'
+import { clamp, syncResourceLedger } from '../domain/resources'
+import { createSeededRandom } from '../domain/random'
 import { applyPlannedOperation } from './apply-operation'
 import { validateAction } from './available-actions'
 import { evaluateOutcome } from './evaluate-outcome'
@@ -39,13 +40,13 @@ export function advanceCycle(
   if (state.status !== 'active' || state.pendingEvent) return state
 
   if (action) {
-    const rejection = validateAction(state, action)
-    if (rejection) {
+    const validation = validateAction(state, action)
+    if (!validation.ok) {
       state.log.push({
         cycle: state.cycle,
         kind: 'system',
-        title: 'Operation unavailable',
-        detail: rejection,
+        title: validation.code === 'insufficient-resources' ? 'Reserve check failed' : 'Operation unavailable',
+        detail: validation.message,
         tone: 'warning',
       })
       return state
@@ -54,10 +55,13 @@ export function advanceCycle(
   }
 
   state.cycle += 1
+  state.environment = getEnvironmentCycle(mission, state.cycle)
   commissionReadyModules(state)
   const balance = runSystems(state)
+  syncResourceLedger(state)
+  recordReserveWarnings(state, mission)
 
-  const incident = selectIncident(state, mission)
+  const incident = selectIncident(state, mission, createSeededRandom(state.run.seed + state.cycle))
   if (incident) state.pendingEvent = incident
 
   recordCondition(state)
@@ -65,6 +69,11 @@ export function advanceCycle(
   const outcome = evaluateOutcome(state, mission)
   if (outcome === 'failed') {
     state.status = 'failed'
+    state.outcome = {
+      status: 'failed',
+      title: 'Mission aborted',
+      detail: 'A critical crew or habitat threshold was crossed.',
+    }
     state.log.push({
       cycle: state.cycle,
       kind: 'system',
@@ -74,6 +83,11 @@ export function advanceCycle(
     })
   } else if (outcome === 'success') {
     state.status = 'success'
+    state.outcome = {
+      status: 'success',
+      title: 'Surface objectives secured',
+      detail: 'The crew completed the training window and is ready for ascent preparation.',
+    }
     state.log.push({
       cycle: state.cycle,
       kind: 'system',
@@ -86,11 +100,16 @@ export function advanceCycle(
       cycle: state.cycle,
       kind: 'system',
       title: 'Cycle report filed',
-      detail: `Power ${balance.generation} generated / ${balance.demand} demanded · reserves updated.`,
+      detail: `Power ${balance.generation} generated / ${balance.demand} demanded · ${balance.unmet} unmet · reserves updated.`, 
     })
   }
 
   return state
+}
+
+function getEnvironmentCycle(mission: MissionDefinition, cycle: number) {
+  const environment = mission.environment.find(entry => entry.cycle === cycle)
+  return environment ?? mission.environment[mission.environment.length - 1]
 }
 
 function commissionReadyModules(state: MissionState): void {
@@ -120,12 +139,29 @@ function runSystems(state: MissionState): PowerBalance {
   state.food = clamp(state.food + lifeSupport.food)
 
   state.integrity = clamp(state.integrity + resolveHabitatIntegrityDelta(state))
+  state.crew = resolveCrewCondition(state)
   state.safety = clamp(state.safety + resolveCrewSafetyDelta(state))
 
   evaluateStateObjectives(state)
   state.research += PASSIVE_RESEARCH
 
   return balance
+}
+
+function recordReserveWarnings(state: MissionState, mission: MissionDefinition): void {
+  for (const [key, definition] of Object.entries(mission.resources)) {
+    const amount = state[key as keyof MissionState]
+    if (typeof amount !== 'number' || amount > definition.thresholds.warning || amount <= definition.thresholds.failure) continue
+
+    const critical = amount <= definition.thresholds.critical
+    state.log.push({
+      cycle: state.cycle,
+      kind: 'system',
+      title: `${definition.label} ${critical ? 'critical' : 'below reserve'}`,
+      detail: `${amount}${definition.unit} remaining. ${critical ? 'Immediate corrective action required.' : 'Plan a replenishment or load-shedding response.'}`,
+      tone: critical ? 'critical' : 'warning',
+    })
+  }
 }
 
 function recordCondition(state: MissionState): void {

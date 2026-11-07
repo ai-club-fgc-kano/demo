@@ -1,4 +1,9 @@
 import type { LogEntry, MissionStatus } from '@/lib/simulation/domain/types'
+import type {
+  EnvironmentCycle,
+  MissionBrief,
+  MissionResourceDefinition,
+} from './contract'
 
 /**
  * Lunar south-pole mission contract.
@@ -16,6 +21,10 @@ export type ModuleId = 'solar' | 'battery' | 'recycler' | 'shielding'
 export type OperationId = 'inspect' | 'science' | 'eva' | 'conserve' | 'repair'
 
 export type ActionId = ModuleId | OperationId
+
+export type ActionValidationResult =
+  | { ok: true }
+  | { ok: false; code: 'unavailable' | 'insufficient-resources'; message: string }
 
 export type MissionObjectiveId = 'systems-check' | 'sample-return' | 'crew-safety'
 
@@ -51,6 +60,17 @@ export type OperationDefinition = {
   description: string
 }
 
+export type ActionDefinition = {
+  id: ActionId
+  label: string
+  description: string
+  category: 'module' | 'operations'
+  crewHours: number
+  resourceCost: Partial<Record<ResourceKey, number>>
+  risk: 'low' | 'moderate' | 'high'
+  educationalExplanation: string
+}
+
 export type QueuedModule = {
   id: ModuleId
   readyCycle: number
@@ -71,7 +91,35 @@ export type ConditionSnapshot = {
   efficiency: number
 }
 
+export type MissionRunMetadata = {
+  seed: number
+  scenarioVersion: string
+  cycleLengthHours: number
+}
+
+export type ResourceStock = {
+  amount: number
+  capacity: number
+  unit: MissionResourceDefinition['unit']
+}
+
+export type MissionOutcome = {
+  status: Extract<MissionStatus, 'success' | 'failed'>
+  title: string
+  detail: string
+} | null
+
+export type CrewCondition = {
+  fatigue: number
+  radiationExposure: number
+  availableHours: number
+}
+
 export type MissionState = {
+  run: MissionRunMetadata
+  environment: EnvironmentCycle
+  outcome: MissionOutcome
+  resources: Record<ResourceKey, ResourceStock>
   cycle: number
   oxygen: number
   water: number
@@ -83,6 +131,7 @@ export type MissionState = {
   research: number
   efficiency: number
   readiness: number
+  crew: CrewCondition
   status: MissionStatus
   modules: ModuleId[]
   queued: QueuedModule[]
@@ -104,4 +153,7 @@ export type MissionDefinition = {
   objectives: { id: MissionObjectiveId; label: string }[]
   events: MissionEvent[]
   introLog: { title: string; detail: string }
+  brief: MissionBrief
+  resources: Record<ResourceKey, MissionResourceDefinition>
+  environment: EnvironmentCycle[]
 }

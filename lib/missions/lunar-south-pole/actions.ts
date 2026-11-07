@@ -1,5 +1,11 @@
 import { isModuleId, moduleCatalog } from './modules'
-import type { ActionId, OperationDefinition, OperationId, ResourceKey } from './types'
+import type {
+  ActionDefinition,
+  ActionId,
+  OperationDefinition,
+  OperationId,
+  ResourceKey,
+} from './types'
 
 export const operationCatalog: Record<OperationId, OperationDefinition> = {
   inspect: {
@@ -25,6 +31,34 @@ export const operationCatalog: Record<OperationId, OperationDefinition> = {
 }
 
 export const operationIds = Object.keys(operationCatalog) as OperationId[]
+
+export function getActionDefinition(id: ActionId): ActionDefinition {
+  if (isModuleId(id)) {
+    const moduleDefinition = moduleCatalog[id]
+    return {
+      id,
+      label: `Build ${moduleDefinition.name}`,
+      description: moduleDefinition.description,
+      category: 'module',
+      crewHours: moduleDefinition.delayCycles * 6,
+      resourceCost: moduleDefinition.cost,
+      risk: 'moderate',
+      educationalExplanation: 'Construction consumes material and crew time before the module becomes operational.',
+    }
+  }
+
+  const operation = operationCatalog[id]
+  return {
+    id,
+    label: operation.label,
+    description: operation.description,
+    category: 'operations',
+    crewHours: id === 'eva' ? 8 : 4,
+    resourceCost: id === 'science' ? { power: 4 } : id === 'repair' ? { materials: 7 } : {},
+    risk: id === 'eva' ? 'high' : id === 'repair' ? 'moderate' : 'low',
+    educationalExplanation: 'The engine revalidates crew, resource, and environmental prerequisites when the action is submitted.',
+  }
+}
 
 export function isOperationId(id: string): id is OperationId {
   return id in operationCatalog
